@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
-
+#include <string.h>
 int main(int argc, char *argv[]){
 	if(argc < 2){
 		printf("File not specified\n");
@@ -27,17 +27,19 @@ int main(int argc, char *argv[]){
 		for (int i = 0; i < size; i++) {
 			char currChar;
 			currChar = f[i];
-			if (strcmp(currChar, '\n') == 0) {
-				printf("\n");
-			} else if (strcmp(currChar, prevChar) == 0) {
+			//if (strcmp(currChar, '\n') == 0) {
+			//	printf("\n");
+			//} else 
+			if (currChar == prevChar) {
 				charCount++;
 			} else {
-				printf(%i%d,charCount, prevChar);
+				printf("%d%c",charCount, prevChar);
 				prevChar = currChar;
 				charCount = 1;
 			}
 			//putchar(c);
 		}
+		printf("\n");
 		return 0;
 	}
 }
