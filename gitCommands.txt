@@ -1,0 +1,3 @@
+git commit -a -m "MESSAGE HERE" or use git add FILENAME to add only certain files instead of all of them with the -a
+git push
+git pull
