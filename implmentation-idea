@@ -1,0 +1,6 @@
+new thread for each new line
+
+new thread into new function to parse the lines, print 10a 
+
+before print, global thread number, ticket lock, unlock increases ticket number
+
