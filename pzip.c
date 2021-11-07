@@ -11,7 +11,7 @@ int numDigits(int n);
 
 int main(int argc, char *argv[]){
 	if(argc < 2){
-		printf("File not specified\n");
+		printf("pzip: file1 [file2 ...]\n");
 		exit(1);
 	}
 	if(freopen(NULL, "wb", stdout) == NULL){
