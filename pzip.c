@@ -22,23 +22,27 @@ int main(int argc, char *argv[]){
 	//int page_size = getpagesize();
 	//printf("page size: %i\n", page_size);	
 	// read all the files given to us
-	for(int i = 1; i < argc; i++){
-		
+
+	int charCount = 1;
+	char prevChar;
+	char currChar;
+	//printf("num files: %i\n", argc - 1);
+	for(int j = 1; j < argc; j++){
 		char *f;
 		int size;
 		struct stat s;
 		
-		int file = open(argv[i], O_RDONLY);
+		int file = open(argv[j], O_RDONLY);
 		fstat (file, & s);
 		size = s.st_size;
-		//printf("file size: %i\n", size);
+		//printf("file %i size: %i\n", j, size);
 		f = (char *) mmap (0, size, PROT_READ, MAP_PRIVATE, file, 0);
-		char prevChar = f[0];
-		int charCount = 1;
+		prevChar = f[0];
+		
 		for (int i = 0; i < size; i++) {
-			char currChar;
 			currChar = f[i];
-			//printf("currchar: %c prevchar: %c i: %i\n", currChar, prevChar, i);
+			//printf("currchar: %c prevchar: %c char in file %i: %i\n", currChar, prevChar, j, i);
+			
 			// Skip \0, do not reset char count
 			if (currChar == 00) continue;
 
@@ -47,11 +51,12 @@ int main(int argc, char *argv[]){
 				//printf("\naddress jump: [%d]: %p > [%d]: %p\n", i-1, &f[i-1], i, &f[i]);
 			}
 
-			// Main zip function 
-			if (currChar == prevChar && i < (size - 1)) {
+			// Main zip function
+			if (currChar == prevChar && (i <  size - 1 || j < argc - 1)) {
 				charCount++;
 			} else {
-				
+				//printf("currChar: %c, prevChar: %c, %d, %d\n", currChar, prevChar, i < size - 1, j < argc - 1);
+				// uncomment below to test	
 				// convert charCount to string
 				char charCountString[numDigits(charCount)];
 				sprintf(charCountString, "%d", charCount);
@@ -63,6 +68,8 @@ int main(int argc, char *argv[]){
 					//printf("%d/n",charCount);
 				} else {
 					//printf("%d%c",charCount, prevChar);
+					
+					// uncomment below to test
 					fwrite(&charCount, sizeof(charCount), 1, stdout);
 					fwrite(&prevCharString, sizeof(prevCharString), 1, stdout);
 					
@@ -71,8 +78,8 @@ int main(int argc, char *argv[]){
 				charCount = 1;
 			}
 		}
-		return 0;
 	}
+	return 0;
 }
 
 // gets the number of digits in a number
