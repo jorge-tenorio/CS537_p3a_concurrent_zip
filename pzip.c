@@ -9,21 +9,6 @@
 
 int numDigits(int n);
 
-long decimalToBinary(int decimalnum)
-{
-    long binarynum = 0;
-    int rem, temp = 1;
-
-    while (decimalnum!=0)
-    {
-        rem = decimalnum%2;
-        decimalnum = decimalnum / 2;
-        binarynum = binarynum + rem*temp;
-        temp = temp * 10;
-    }
-    return binarynum;
-}
-
 int main(int argc, char *argv[]){
 	if(argc < 2){
 		printf("File not specified\n");
@@ -68,26 +53,24 @@ int main(int argc, char *argv[]){
 			} else {
 				
 				// convert charCount to string
-				//char charCountString[numDigits(charCount)];
-				//sprintf(charCountString, "%d", charCount);
+				char charCountString[numDigits(charCount)];
+				sprintf(charCountString, "%d", charCount);
 
 				// convert prevChar to String
-				//char prevCharString[2] = {prevChar, '\0'};
+				char prevCharString[1] = {prevChar};
 				
 				if (prevChar == 10) {
 					//printf("%d/n",charCount);
 				} else {
-					printf("%ld%c",decimalToBinary(charCount), prevChar);
-					//fwrite((char *)toBinary(charCount), sizeof(toBinary(charCount)), 1, stdout);
-					//fwrite(prevCharString, sizeof(prevCharString), 1, stdout);
+					//printf("%d%c",charCount, prevChar);
+					fwrite(&charCount, sizeof(charCount), 1, stdout);
+					fwrite(&prevCharString, sizeof(prevCharString), 1, stdout);
 					
 				}
 				prevChar = currChar;
 				charCount = 1;
 			}
-			//putchar(c);
 		}
-		printf("\n");
 		return 0;
 	}
 }
