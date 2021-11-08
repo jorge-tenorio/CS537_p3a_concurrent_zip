@@ -48,7 +48,7 @@ int main(int argc, char *argv[]){
 				//printf("\naddress jump: [%d]: %p > [%d]: %p\n", i-1, &f[i-1], i, &f[i]);
 			//}
 
-			//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
+			printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
 
 			// Main zip function
 			if (currChar == prevChar && (i <  size - 1 || j < argc - 1)) {
@@ -69,21 +69,12 @@ int main(int argc, char *argv[]){
 				char prevCharString[1] = {prevChar};
 				
 				if (prevChar == 10) {
+
+					//printf("%i\\n\n", charCount);
+
+					// uncomment below for testing
 					char newlinechar = {'\n'};
-					//printf("%d'\\n'\n", charCount);
-					int numDigs = numDigits(charCount);
-					char newline[numDigs + 3];
-					sprintf(newline, "%d", charCount);
-					newline[numDigs + 1] = '\\';
-					newline[numDigs + 2] = 'n';
-					newline[numDigs + 3] = '\n';
-					//printf("\n");
-					fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
-					for (int tt = 0; tt < numDigs + 3; tt++){					
-						//printf("%c", newline[tt]);	
-						fwrite(&newline[tt], sizeof(char), 1, stdout);
-					}
-					//printf("\n");
+					fwrite(&charCount, sizeof(charCount), 1, stdout);
 					fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
 				} else {
 					//printf("%d%c",charCount, prevChar);
@@ -92,6 +83,15 @@ int main(int argc, char *argv[]){
 					fwrite(&charCount, sizeof(charCount), 1, stdout);
 					fwrite(&prevCharString, sizeof(prevCharString), 1, stdout);
 					
+					if(j == argc - 1 && i == size - 1 && currChar == 10){
+						//printf("1\\n\n");
+						
+						// uncomment below for testing
+						char newlinechar = {'\n'};
+						int hi = 1;
+						fwrite(&hi, sizeof(int), 1, stdout);
+						fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
+					}
 				}
 				prevChar = currChar;
 				charCount = 1;
