@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
 	// read all the files given to us
 
 	int charCount = 0;
-	char prevChar;
+	char prevChar = 0;
 	char currChar;
 	//printf("num files: %i\n", argc - 1);
 	for(int j = 1; j < argc; j++){
@@ -34,7 +34,10 @@ int main(int argc, char *argv[]){
 		size = s.st_size;
 		//printf("file %i size: %i\n", j, size);
 		f = (char *) mmap (0, size, PROT_READ, MAP_PRIVATE, file, 0);
-		prevChar = f[0];
+		
+		if(j == 1){
+			prevChar = f[0];
+		}
 		
 		for (int i = 0; i < size; i++) {
 			currChar = f[i];
@@ -71,7 +74,7 @@ int main(int argc, char *argv[]){
 					char newlinechar = {'\n'};
 					fwrite(&charCount, sizeof(charCount), 1, stdout);
 					fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
-				} else {
+				}else {
 
 					// uncomment below to test
 					// convert charCount to string
