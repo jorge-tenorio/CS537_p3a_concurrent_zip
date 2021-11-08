@@ -7,11 +7,73 @@
 #include <unistd.h>
 #include <limits.h>
 
+typedef struct FileData{
+	int count;
+	char prev;
+	char curr;
+}FileData;
+
 int numDigits(int n);
 
 void printChar(int num, char letter){
 	fwrite(&num, sizeof(num), 1, stdout);
 	fwrite(&letter, sizeof(letter), 1, stdout);
+}
+
+FileData readFile(char *f, int size, int charCount, char prevChar, char currChar, int j, int argc){
+	if(j == 1){
+		prevChar = f[0];
+	}
+
+	for (int i = 0; i < size; i++) {
+		currChar = f[i];
+		//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
+
+		// Skip \0, do not reset char count
+		if (currChar == 00) continue;
+
+		// Address compare
+		//if (i > 0) {
+			//printf("\naddress jump: [%d]: %p > [%d]: %p\n", i-1, &f[i-1], i, &f[i]);
+		//}
+
+		//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
+
+		// Main zip function
+		if (currChar == prevChar && (i <  size - 1 || j < argc - 1)) {
+			charCount++;
+		} else {
+			if(i == size - 1 && currChar == prevChar){
+				charCount++;
+			}
+
+			if (prevChar == 10) {
+
+				//printf("%i\\n\n", charCount);
+
+				// uncomment below for testing
+				char newlinechar = {'\n'};
+				printChar(charCount, newlinechar);
+			}else {
+				printChar(charCount, prevChar);
+				//printf("%d%c",charCount, prevChar);
+
+				if (prevChar != currChar && j == argc - 1 && i == size - 1){
+					//printf("1%c", currChar);
+					printChar(1, currChar);
+				}
+			}
+			prevChar = currChar;
+			charCount = 1;
+		}
+	}
+
+	struct FileData data;
+	data.count = charCount;
+	data.prev = prevChar;
+	data.curr = currChar;
+
+	return data;
 }
 
 int main(int argc, char *argv[]){
@@ -27,7 +89,7 @@ int main(int argc, char *argv[]){
 
 	int charCount = 0;
 	char prevChar = 0;
-	char currChar;
+	char currChar = 0;
 	//printf("num files: %i\n", argc - 1);
 	for(int j = 1; j < argc; j++){
 		char *f;
@@ -48,50 +110,12 @@ int main(int argc, char *argv[]){
 		if(j == 1){
 			prevChar = f[0];
 		}
-		
-		for (int i = 0; i < size; i++) {
-			currChar = f[i];
-			//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
-			
-			// Skip \0, do not reset char count
-			if (currChar == 00) continue;
 
-			// Address compare
-			//if (i > 0) {
-				//printf("\naddress jump: [%d]: %p > [%d]: %p\n", i-1, &f[i-1], i, &f[i]);
-			//}
+		struct FileData data = readFile(f, size, charCount, prevChar, currChar, j, argc);
 
-			//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
-
-			// Main zip function
-			if (currChar == prevChar && (i <  size - 1 || j < argc - 1)) {
-				charCount++;
-			} else {
-
-				if(i == size - 1 && currChar == prevChar){
-					charCount++;
-				}	
-				
-				if (prevChar == 10) {
-
-					//printf("%i\\n\n", charCount);
-
-					// uncomment below for testing
-					char newlinechar = {'\n'};
-					printChar(charCount, newlinechar);
-				}else {
-					printChar(charCount, prevChar);
-					//printf("%d%c",charCount, prevChar);
-					
-					if (prevChar != currChar && j == argc - 1 && i == size - 1){
-						//printf("1%c", currChar);
-						printChar(1, currChar);
-					}
-				}
-				prevChar = currChar;
-				charCount = 1;
-			}
-		}
+		charCount = data.count;
+		prevChar = data.prev;
+		currChar = data.curr;
 	}
 	return 0;
 }
@@ -103,6 +127,3 @@ int numDigits (int n) {
     return 1 + numDigits (n / 10);
 }
 
-void readLine(){
-
-}
