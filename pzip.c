@@ -9,6 +9,11 @@
 
 int numDigits(int n);
 
+void printChar(int num, char letter){
+	fwrite(&num, sizeof(num), 1, stdout);
+	fwrite(&letter, sizeof(letter), 1, stdout);
+}
+
 int main(int argc, char *argv[]){
 	if(argc < 2){
 		printf("pzip: file1 [file2 ...]\n");
@@ -67,39 +72,20 @@ int main(int argc, char *argv[]){
 					charCount++;
 				}	
 				
-				// uncomment below to test	
-				// convert prevChar to String
-				char prevCharString[1] = {prevChar};
-				
 				if (prevChar == 10) {
 
 					//printf("%i\\n\n", charCount);
 
 					// uncomment below for testing
 					char newlinechar = {'\n'};
-					fwrite(&charCount, sizeof(charCount), 1, stdout);
-					fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
+					printChar(charCount, newlinechar);
 				}else {
-
-					// uncomment below to test
-					// convert charCount to string
-					char charCountString[numDigits(charCount)];
-					sprintf(charCountString, "%d", charCount);
-					
-					fwrite(&charCount, sizeof(charCount), 1, stdout);
-					fwrite(&prevCharString, sizeof(prevCharString), 1, stdout);
-
+					printChar(charCount, prevChar);
 					//printf("%d%c",charCount, prevChar);
-
+					
 					if (prevChar != currChar && j == argc - 1 && i == size - 1){
-						//printf("printing last char\n");
 						//printf("1%c", currChar);
-						int lastChar = 1;
-						
-						char currCharString[1] = {currChar};
-						
-						fwrite(&lastChar, sizeof(lastChar), 1, stdout);
-						fwrite(&currCharString, sizeof(currCharString), 1, stdout);
+						printChar(1, currChar);
 					}
 				}
 				prevChar = currChar;
