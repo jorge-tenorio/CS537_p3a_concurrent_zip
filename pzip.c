@@ -44,33 +44,45 @@ int main(int argc, char *argv[]){
 			if (currChar == 00) continue;
 
 			// Address compare
-			if (i > 0) {
+			//if (i > 0) {
 				//printf("\naddress jump: [%d]: %p > [%d]: %p\n", i-1, &f[i-1], i, &f[i]);
-			}
+			//}
 
 			// Main zip function
 			if (currChar == prevChar && (i <  size - 1 || j < argc - 1)) {
 				charCount++;
 			} else {
-				//printf("currChar: %c, prevChar: %c, %d, %d\n", currChar, prevChar, i < size - 1, j < argc - 1);
 				// uncomment below to test	
 				// convert charCount to string
-				char charCountString[numDigits(charCount)];
-				sprintf(charCountString, "%d", charCount);
+				//char charCountString[numDigits(charCount)];
+				//sprintf(charCountString, "%d", charCount);
 
 				// convert prevChar to String
-				char prevCharString[1] = {prevChar};
+				//char prevCharString[1] = {prevChar};
 				
 				if (prevChar == 10) {
-					//printf("\n");
-					char newline[1] = {'\n'};
-					fwrite(&newline, sizeof(newline), 1, stdout);
+					//char newlinechar = {'\n'};
+					//printf("%d'\\n'\n", charCount);
+					int numDigs = numDigits(charCount);
+					char newline[numDigs + 3];
+					sprintf(newline, "%d", charCount);
+					newline[numDigs + 1] = '\\';
+					newline[numDigs + 2] = 'n';
+					newline[numDigs + 3] = '\n';
+					printf("\n");
+					//fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
+					for (int tt = 0; tt < numDigs + 3; tt++){					
+						printf("%c", newline[tt]);	
+						//fwrite(&newline[tt], sizeof(char), 1, stdout);
+					}
+					printf("\n");
+					//fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
 				} else {
-					//printf("%d%c",charCount, prevChar);
+					printf("%d%c",charCount, prevChar);
 					
 					// uncomment below to test
-					fwrite(&charCount, sizeof(charCount), 1, stdout);
-					fwrite(&prevCharString, sizeof(prevCharString), 1, stdout);
+					//fwrite(&charCount, sizeof(charCount), 1, stdout);
+					//fwrite(&prevCharString, sizeof(prevCharString), 1, stdout);
 					
 				}
 				prevChar = currChar;
