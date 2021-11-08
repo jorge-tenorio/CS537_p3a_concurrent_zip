@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
 	//printf("page size: %i\n", page_size);	
 	// read all the files given to us
 
-	int charCount = 1;
+	int charCount = 0;
 	char prevChar;
 	char currChar;
 	//printf("num files: %i\n", argc - 1);
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
 		
 		for (int i = 0; i < size; i++) {
 			currChar = f[i];
-			//printf("currchar: %c prevchar: %c char in file %i: %i\n", currChar, prevChar, j, i);
+			//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
 			
 			// Skip \0, do not reset char count
 			if (currChar == 00) continue;
@@ -47,21 +47,28 @@ int main(int argc, char *argv[]){
 			//if (i > 0) {
 				//printf("\naddress jump: [%d]: %p > [%d]: %p\n", i-1, &f[i-1], i, &f[i]);
 			//}
+			//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
 
 			// Main zip function
 			if (currChar == prevChar && (i <  size - 1 || j < argc - 1)) {
 				charCount++;
 			} else {
+
+				if(i == size - 1){
+					charCount++;
+				}
+				
+				
 				// uncomment below to test	
 				// convert charCount to string
-				//char charCountString[numDigits(charCount)];
-				//sprintf(charCountString, "%d", charCount);
+				char charCountString[numDigits(charCount)];
+				sprintf(charCountString, "%d", charCount);
 
 				// convert prevChar to String
-				//char prevCharString[1] = {prevChar};
+				char prevCharString[1] = {prevChar};
 				
 				if (prevChar == 10) {
-					//char newlinechar = {'\n'};
+					char newlinechar = {'\n'};
 					//printf("%d'\\n'\n", charCount);
 					int numDigs = numDigits(charCount);
 					char newline[numDigs + 3];
@@ -69,20 +76,20 @@ int main(int argc, char *argv[]){
 					newline[numDigs + 1] = '\\';
 					newline[numDigs + 2] = 'n';
 					newline[numDigs + 3] = '\n';
-					printf("\n");
+					//printf("\n");
 					//fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
 					for (int tt = 0; tt < numDigs + 3; tt++){					
-						printf("%c", newline[tt]);	
-						//fwrite(&newline[tt], sizeof(char), 1, stdout);
+						//printf("%c", newline[tt]);	
+						fwrite(&newline[tt], sizeof(char), 1, stdout);
 					}
-					printf("\n");
-					//fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
+					//printf("\n");
+					fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
 				} else {
-					printf("%d%c",charCount, prevChar);
+					//printf("%d%c",charCount, prevChar);
 					
 					// uncomment below to test
-					//fwrite(&charCount, sizeof(charCount), 1, stdout);
-					//fwrite(&prevCharString, sizeof(prevCharString), 1, stdout);
+					fwrite(&charCount, sizeof(charCount), 1, stdout);
+					fwrite(&prevCharString, sizeof(prevCharString), 1, stdout);
 					
 				}
 				prevChar = currChar;
