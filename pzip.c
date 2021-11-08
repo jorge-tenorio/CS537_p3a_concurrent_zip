@@ -47,6 +47,7 @@ int main(int argc, char *argv[]){
 			//if (i > 0) {
 				//printf("\naddress jump: [%d]: %p > [%d]: %p\n", i-1, &f[i-1], i, &f[i]);
 			//}
+
 			//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
 
 			// Main zip function
@@ -54,7 +55,7 @@ int main(int argc, char *argv[]){
 				charCount++;
 			} else {
 
-				if(i == size - 1){
+				if(i == size - 1 && currChar == prevChar){
 					charCount++;
 				}
 				
@@ -77,7 +78,7 @@ int main(int argc, char *argv[]){
 					newline[numDigs + 2] = 'n';
 					newline[numDigs + 3] = '\n';
 					//printf("\n");
-					//fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
+					fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
 					for (int tt = 0; tt < numDigs + 3; tt++){					
 						//printf("%c", newline[tt]);	
 						fwrite(&newline[tt], sizeof(char), 1, stdout);
