@@ -20,7 +20,13 @@ int main(int argc, char *argv[]){
     int file = open(argv[1], O_RDONLY);
     fstat (file, & s);
     size = s.st_size;
-
+	
+	FILE *tempfile = fopen(argv[1], "r");
+	if(tempfile == NULL){
+		printf("File not found\n");
+		exit(1);
+	}
+	fclose(tempfile);
 	
 	for(int i = 0; i < size; i ++){    
 		int rc = fork();
