@@ -30,6 +30,11 @@ int main(int argc, char *argv[]){
 		struct stat s;
 		
 		int file = open(argv[j], O_RDONLY);
+		
+		if(file < 0){
+			continue;
+		}
+
 		fstat (file, & s);
 		size = s.st_size;
 		//printf("file %i size: %i\n", j, size);
