@@ -14,10 +14,7 @@ int main(int argc, char *argv[]){
 		printf("pzip: file1 [file2 ...]\n");
 		exit(1);
 	}
-	if(freopen(NULL, "wb", stdout) == NULL){
-		printf("Cannot write in binary\n");
-		exit(1);
-	}
+	
 	//int num_threads = 0;
 	//int page_size = getpagesize();
 	//printf("page size: %i\n", page_size);	
@@ -65,7 +62,9 @@ int main(int argc, char *argv[]){
 				char prevCharString[1] = {prevChar};
 				
 				if (prevChar == 10) {
-					//printf("%d/n",charCount);
+					//printf("\n");
+					char newline[1] = {'\n'};
+					fwrite(&newline, sizeof(newline), 1, stdout);
 				} else {
 					//printf("%d%c",charCount, prevChar);
 					
