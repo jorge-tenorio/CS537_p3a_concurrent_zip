@@ -48,7 +48,7 @@ int main(int argc, char *argv[]){
 				//printf("\naddress jump: [%d]: %p > [%d]: %p\n", i-1, &f[i-1], i, &f[i]);
 			//}
 
-			printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
+			//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
 
 			// Main zip function
 			if (currChar == prevChar && (i <  size - 1 || j < argc - 1)) {
@@ -57,14 +57,9 @@ int main(int argc, char *argv[]){
 
 				if(i == size - 1 && currChar == prevChar){
 					charCount++;
-				}
-				
+				}	
 				
 				// uncomment below to test	
-				// convert charCount to string
-				char charCountString[numDigits(charCount)];
-				sprintf(charCountString, "%d", charCount);
-
 				// convert prevChar to String
 				char prevCharString[1] = {prevChar};
 				
@@ -77,20 +72,26 @@ int main(int argc, char *argv[]){
 					fwrite(&charCount, sizeof(charCount), 1, stdout);
 					fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
 				} else {
-					//printf("%d%c",charCount, prevChar);
-					
+
 					// uncomment below to test
+					// convert charCount to string
+					char charCountString[numDigits(charCount)];
+					sprintf(charCountString, "%d", charCount);
+					
 					fwrite(&charCount, sizeof(charCount), 1, stdout);
 					fwrite(&prevCharString, sizeof(prevCharString), 1, stdout);
-					
-					if(j == argc - 1 && i == size - 1 && currChar == 10){
-						//printf("1\\n\n");
+
+					//printf("%d%c",charCount, prevChar);
+
+					if (prevChar != currChar && j == argc - 1 && i == size - 1){
+						//printf("printing last char\n");
+						//printf("1%c", currChar);
+						int lastChar = 1;
 						
-						// uncomment below for testing
-						char newlinechar = {'\n'};
-						int hi = 1;
-						fwrite(&hi, sizeof(int), 1, stdout);
-						fwrite(&newlinechar, sizeof(newlinechar), 1, stdout);
+						char currCharString[1] = {currChar};
+						
+						fwrite(&lastChar, sizeof(lastChar), 1, stdout);
+						fwrite(&currCharString, sizeof(currCharString), 1, stdout);
 					}
 				}
 				prevChar = currChar;
