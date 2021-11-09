@@ -11,6 +11,9 @@ typedef struct FileData{
 	int count;
 	char prev;
 	char curr;
+	int* n;
+	int* l;
+	int nlSize;
 }FileData;
 
 int numDigits(int n);
@@ -25,17 +28,20 @@ FileData readFile(char *f, int size, int charCount, char prevChar, char currChar
 		prevChar = f[0];
 	}
 
+	int arrSize = 8;
+	int k = 0; // nums and letters index
+	int* nums = (int*)malloc(arrSize * sizeof(int));
+	char* letters = (char*)malloc(arrSize * sizeof(char));
+	if (nums == NULL || letters == NULL) {
+		printf("Error: Memory not allocated.\n");
+		exit(0);
+	}
+
 	for (int i = 0; i < size; i++) {
 		currChar = f[i];
-		//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
 
 		// Skip \0, do not reset char count
 		if (currChar == 00) continue;
-
-		// Address compare
-		//if (i > 0) {
-			//printf("\naddress jump: [%d]: %p > [%d]: %p\n", i-1, &f[i-1], i, &f[i]);
-		//}
 
 		//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
 
@@ -53,26 +59,54 @@ FileData readFile(char *f, int size, int charCount, char prevChar, char currChar
 
 				// uncomment below for testing
 				char newlinechar = {'\n'};
+
 				printChar(charCount, newlinechar);
+				nums[k] = charCount;
+				letters[k] = newlinechar;
 			}else {
 				printChar(charCount, prevChar);
+				nums[k] = charCount;
+				letters[k] = prevChar;
+
 				//printf("%d%c",charCount, prevChar);
 
 				if (prevChar != currChar && j == argc - 1 && i == size - 1){
 					//printf("1%c", currChar);
+
 					printChar(1, currChar);
+					nums[k] = 1;
+					letters[k] = currChar;
 				}
 			}
 			prevChar = currChar;
 			charCount = 1;
+			k++;
+			if (k > arrSize) {
+				arrSize = arrSize * 2;
+				nums = realloc(nums, arrSize * sizeof(int));
+				letters = realloc(letters, arrSize * sizeof(char)); 
+			}
 		}
 	}
+
+	//Working through making print statement.
+	for (int i = 0; i <= k; i++) {
+		//printf("%i%c\n",nums[i], letters[i]);
+		printChar(&nums[i], letters[i]);
+		//printf(" %d\n", tempint);
+	}
+
+	// Add extra space incase array is completely full
+	// TODO: put print statement in the main method after running through the file. 
 
 	struct FileData data;
 	data.count = charCount;
 	data.prev = prevChar;
 	data.curr = currChar;
-
+	data.n = nums;
+	data.l = nums;
+	free(nums);
+	free(letters);
 	return data;
 }
 
@@ -98,9 +132,8 @@ int main(int argc, char *argv[]){
 		
 		int file = open(argv[j], O_RDONLY);
 		
-		if(file < 0){
-			continue;
-		}
+		if(file < 0) continue;
+
 
 		fstat (file, & s);
 		size = s.st_size;
