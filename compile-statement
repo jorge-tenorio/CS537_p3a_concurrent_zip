@@ -1,1 +1,1 @@
-gcc -Wall -Werror -pthread -O -o pzip pzip.c
+gcc -pthread -Wall -Werror -pthread -O -o pzip pzip.c
