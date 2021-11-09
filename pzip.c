@@ -119,9 +119,9 @@ void *readFile(void *threadData){
 		}
 	}
 
-	//for(int i = 0; i < k; i++){
-		//printf("thread: %i, nums[%i]: %i, letters[%i]: %c\n", data->threadNum, i, nums[i], i, letters[i]);
-	//}
+	for(int i = 0; i < k; i++){
+		printf("thread: %i, nums[%i]: %i, letters[%i]: %c\n", data->threadNum, i, nums[i], i, letters[i]);
+	}
 	
 	data->k = k;
 	data->nums = nums;
@@ -229,15 +229,38 @@ int main(int argc, char *argv[]){
 	//while(turn != data->threadTurn)
 		//pthread_cond_wait(&cv[data->threadTurn], &lock);
 	
-	//printf("Now starting to print\n");
+	printf("Now starting to print %i\n", threaddata[1]->nums[0]);
 
 	//Working through making print statement.
+	char threadPrevChar = 0;
+	char threadCurrChar = 0;
+	int totalCharCount = 0;
 	for (int i = 0; i < (num_threads * (argc - 1)); i++) {
-		//printf("thread %i data below:\n", i + 1);
+		printf("thread %i data below:\n", i + 1);
 		for (int n = 0; n < threaddata[i]->k; n++){
-			printf("%i%c",(int)threaddata[i]->nums[n], (char)threaddata[i]->letters[n]);
-			//printChar(nums[i], letters[i]);
-			//printf(" %d\n", tempint);
+			threadPrevChar = threadCurrChar;
+			threadCurrChar = threaddata[i]->letters[n];
+
+			if(i == 0 && n == 0){
+				threadPrevChar = threadCurrChar;
+			}
+
+			printf("prevChar: %c, currChar: %c, totalCharCount: %i\n", threadPrevChar, threadCurrChar, totalCharCount);
+			printf("%d, %d\n", i != (num_threads * (argc - 1)) - 1, n != threaddata[i]->k - 1);
+			if(threadPrevChar == threadCurrChar && (i != (num_threads * (argc - 1)) - 1 || n != threaddata[i]->k - 1)){
+				printf("1totalcount incremented by %i\n", threaddata[i]->nums[i]);
+				totalCharCount = totalCharCount + threaddata[i]->nums[n];
+			}else{
+
+				if (threadPrevChar == threadCurrChar && i == (num_threads * (argc - 1)) - 1){
+					printf("2totalcount incremented by %i. i: %i, n: %i\n", threaddata[i]->nums[i], i, n);
+					totalCharCount = totalCharCount + threaddata[i]->nums[n];
+				}
+
+				printf("%i%c", totalCharCount, threadCurrChar);
+				//printChar(nums[i], letters[i]);
+				//printf(" %d\n", tempint);
+			}
 		}
 	}
 
