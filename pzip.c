@@ -17,11 +17,10 @@ typedef struct ThreadData{
 	int j;
 	int argc;
 	int threadNum;
-	char start;
-	char end;
 	char *letters;
 	int *nums;
 	int k;
+	int startSize;
 }ThreadData;
 
 //pthread_mutex_t lock;
@@ -51,8 +50,6 @@ void *readFile(void *threadData){
 		prevChar = f[0];
 	}
 
-	data->start = f[0];
-
 	int arrSize = 8;
 	int k = 0; // nums and letters index
 	int* nums = (int*)malloc(arrSize * sizeof(int));
@@ -62,11 +59,9 @@ void *readFile(void *threadData){
 		exit(0);
 	}
 
-	for (int i = 0; i < size; i++) {
-		if(i == size - 1){
-			data->end = f[i];
-		}
+	printf("start value for thread %i: %i\n", data->threadNum, data->startSize);
 
+	for (int i = data->startSize; i < size; i++) {
 		currChar = f[i];
 
 		// Skip \0, do not reset char count
@@ -170,7 +165,7 @@ int main(int argc, char *argv[]){
 	}
 
 	int lastIndex = 0;
-
+	
 	//printf("num files: %i\n", argc - 1);
 	for(int j = 1; j < argc; j++){
 		char *f;
@@ -178,12 +173,13 @@ int main(int argc, char *argv[]){
 		struct stat s;
 		
 		int file = open(argv[j], O_RDONLY);
-		
+		int threadSize = 0;
+		int currSize = 0;	
 		if(file < 0) continue;
-
 
 		fstat (file, & s);
 		size = s.st_size;
+		threadSize = size / num_threads;
 		//printf("file %i size: %i\n", j, size);
 		f = (char *) mmap (0, size, PROT_READ, MAP_PRIVATE, file, 0);
 		
@@ -191,26 +187,36 @@ int main(int argc, char *argv[]){
 			prevChar = f[0];
 		}
 
+		ThreadData *totalData = malloc(sizeof(ThreadData) * num_threads);
+
 		for (int uu = 0; uu < num_threads; uu++){			
 			ThreadData newThreadData;
-
 			//if (newThreadData == NULL){
 				//printf("Cannot malloc\n");
 				//exit(1);
 			//}
 
 			newThreadData.f = f;
-			newThreadData.size = size;
+			newThreadData.size = currSize + threadSize;
 			newThreadData.charCount = charCount;
 			newThreadData.prevChar = prevChar;
 			newThreadData.currChar = currChar;
 			newThreadData.j = j;
 			newThreadData.argc = argc;
 			newThreadData.threadNum = uu + 1;
-			//newThreadData->threadTurn = uu + 1;
-			printf("thread %i created\n", uu + 1);
-			pthread_create(&threads[uu], NULL, readFile, &newThreadData);
+			newThreadData.startSize = currSize;
+			totalData[uu] = newThreadData;
+			printf("thread %i created. From %i to %i\n", uu + 1, totalData[uu].startSize, totalData[uu].size);
+			pthread_create(&threads[uu], NULL, readFile, &totalData[uu]);
+
+			currSize = currSize + threadSize;
+
+			if( currSize > size){
+				currSize = size;
+			}	
 		}
+
+		free(totalData);
 		
 		for(int uu = 0; uu < num_threads; uu++){
 			void *returnData;
@@ -229,7 +235,7 @@ int main(int argc, char *argv[]){
 	//while(turn != data->threadTurn)
 		//pthread_cond_wait(&cv[data->threadTurn], &lock);
 	
-	printf("Now starting to print %i\n", threaddata[1]->nums[0]);
+	printf("Now starting to print %i\n", threaddata[0]->nums[0]);
 
 	//Working through making print statement.
 	char threadPrevChar = 0;
@@ -246,7 +252,7 @@ int main(int argc, char *argv[]){
 			}
 
 			printf("prevChar: %c, currChar: %c, totalCharCount: %i\n", threadPrevChar, threadCurrChar, totalCharCount);
-			printf("%d, %d\n", i != (num_threads * (argc - 1)) - 1, n != threaddata[i]->k - 1);
+			//printf("%d, %d\n", i != (num_threads * (argc - 1)) - 1, n != threaddata[i]->k - 1);
 			if(threadPrevChar == threadCurrChar && (i != (num_threads * (argc - 1)) - 1 || n != threaddata[i]->k - 1)){
 				printf("1totalcount incremented by %i\n", threaddata[i]->nums[i]);
 				totalCharCount = totalCharCount + threaddata[i]->nums[n];
