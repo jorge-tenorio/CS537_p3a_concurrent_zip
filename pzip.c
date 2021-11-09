@@ -44,7 +44,7 @@ FileData readFile(char *f, int size, int charCount, char prevChar, char currChar
 		if (currChar == 00) continue;
 
 		//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
-
+	
 		// Main zip function
 		if (currChar == prevChar && (i <  size - 1 || j < argc - 1)) {
 			charCount++;
@@ -60,11 +60,11 @@ FileData readFile(char *f, int size, int charCount, char prevChar, char currChar
 				// uncomment below for testing
 				char newlinechar = {'\n'};
 
-				printChar(charCount, newlinechar);
+				//printChar(charCount, newlinechar);
 				nums[k] = charCount;
 				letters[k] = newlinechar;
 			}else {
-				printChar(charCount, prevChar);
+				//printChar(charCount, prevChar);
 				nums[k] = charCount;
 				letters[k] = prevChar;
 
@@ -73,7 +73,8 @@ FileData readFile(char *f, int size, int charCount, char prevChar, char currChar
 				if (prevChar != currChar && j == argc - 1 && i == size - 1){
 					//printf("1%c", currChar);
 
-					printChar(1, currChar);
+					//printChar(1, currChar);
+					k++;
 					nums[k] = 1;
 					letters[k] = currChar;
 				}
@@ -90,8 +91,8 @@ FileData readFile(char *f, int size, int charCount, char prevChar, char currChar
 	}
 
 	//Working through making print statement.
-	for (int i = 0; i <= k; i++) {
-		//printf("%i%c\n",nums[i], letters[i]);
+	for (int i = 0; i < k; i++) {
+		//printf("%i%c",nums[i], letters[i]);
 		printChar(nums[i], letters[i]);
 		//printf(" %d\n", tempint);
 	}
