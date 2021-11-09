@@ -195,7 +195,6 @@ int main(int argc, char *argv[]){
 			int tempSize = currSize + threadSize;
 
 			if(size - tempSize < threadSize){
-				printf("changed buff\n");
 				buff = (size - tempSize);
 			}else{
 				buff = 0;
@@ -239,35 +238,35 @@ int main(int argc, char *argv[]){
 	//printf("Now starting to print %i\n", threaddata[0]->nums[0]);
 
 	//Working through making print statement.
-	char threadPrevChar = 0;
-	char threadCurrChar = 0;
+	char threadPrevChar = threaddata[0]->letters[0];
+	char threadCurrChar = threaddata[0]->letters[0];
 	int totalCharCount = 0;
 	for (int i = 0; i < (num_threads * (argc - 1)); i++) {
-		//printf("thread %i data below:\n", i + 1);
+		printf("thread %i data below:\n", i + 1);
 		for (int n = 0; n < threaddata[i]->k; n++){
-			threadPrevChar = threadCurrChar;
-			threadCurrChar = threaddata[i]->letters[n];
-
-			if(i == 0 && n == 0){
-				threadPrevChar = threadCurrChar;
-			}
-
-			//printf("prevChar: %c, currChar: %c, totalCharCount: %i\n", threadPrevChar, threadCurrChar, totalCharCount);
+			printf("prevChar: '%c', currChar: '%c', totalCharCount: %i\n", threadPrevChar, threadCurrChar, totalCharCount);
 			//printf("%d, %d\n", i != (num_threads * (argc - 1)) - 1, n != threaddata[i]->k - 1);
-			if(threadPrevChar == threadCurrChar && (i != (num_threads * (argc - 1)) - 1 || n != threaddata[i]->k - 1)){
-				//printf("1totalcount incremented by %i\n", threaddata[i]->nums[i]);
+			if(threadPrevChar == threadCurrChar){
+				printf("1totalcount incremented by %i\n", threaddata[i]->nums[n]);
 				totalCharCount = totalCharCount + threaddata[i]->nums[n];
 			}else{
-
-				if (threadPrevChar == threadCurrChar && i == (num_threads * (argc - 1)) - 1){
-					//printf("2totalcount incremented by %i. i: %i, n: %i\n", threaddata[i]->nums[i], i, n);
+				if (threadPrevChar == threadCurrChar && n == threaddata[i]->k - 1){
+					printf("2totalcount incremented by %i. i: %i, n: %i\n", threaddata[i]->nums[n], i, n);
 					totalCharCount = totalCharCount + threaddata[i]->nums[n];
 				}
 
-				printf("%i%c", totalCharCount, threadCurrChar);
+				if(threadPrevChar == 10){
+					totalCharCount = threaddata[i]->nums[n];
+					printf("%i\\n\n", totalCharCount);
+				}else{
+					printf("%i%c", totalCharCount, threadPrevChar);
+				}
+				totalCharCount = 0;
 				//printChar(nums[i], letters[i]);
 				//printf(" %d\n", tempint);
 			}
+			threadPrevChar = threadCurrChar;
+			threadCurrChar = threaddata[i]->letters[n + 1];
 		}
 	}
 
