@@ -51,7 +51,7 @@ void *readFile(void *threadData){
 		prevChar = f[0];
 	}
 
-	data->start = f[0]
+	data->start = f[0];
 
 	int arrSize = 8;
 	int k = 0; // nums and letters index
@@ -142,24 +142,24 @@ int main(int argc, char *argv[]){
 	char currChar = 0;
 	//turn = 1;
 	
-	//pthread *threads = (pthread*)malloc(sizeof(pthread) * num_threads);
+	pthread_t *threads = (pthread_t*)malloc(sizeof(pthread_t) * num_threads);
 	//cv = (pthread_cond_t*)malloc(sizeof(pthread_cond_t) * num_threads);
 
-	if (cv == NULL || threads == NULL){
+	if (threads == NULL){
 		printf("Cannot malloc\n");
 		exit(1);
 	}
 
-	for(int i = 0; i < num_threads; i++){
-		if (pthread_cond_init(&cv[i], NULL) != 0) {
-			printf("pthread_cond_init() error");
-			exit(1);
-		}
-	}
+	//for(int i = 0; i < num_threads; i++){
+		//if (pthread_cond_init(&cv[i], NULL) != 0) {
+			//printf("pthread_cond_init() error");
+			//exit(1);
+		//}
+	//}
 
 	//pthread_mutex_init(&lock, NULL);
 
-	void struct FileData *data;
+	void *data;
 	int buffer = 0;
     data = (struct FileData*)malloc(sizeof(struct FileData) * num_threads * (argc - 1));
 
@@ -187,15 +187,6 @@ int main(int argc, char *argv[]){
 		
 		if(j == 1){
 			prevChar = f[0];
-		}
-		
-		
-		
-		void struct FileData *data;
-		data = (struct FileData*)malloc(sizeof(struct FileData) * num_threadsi);
-		if(data == NULL){
-			printf("Cannot malloc\n");
-			exit(1);
 		}
 
 		for (int uu = 0; uu < num_threads; uu++){
@@ -237,13 +228,11 @@ int main(int argc, char *argv[]){
 
 	//Working through making print statement.
 	for (int i = 0; i < (num_threads * (argc - 1)); i++) {
-		
-
-
-
-		//printf("%i%c",nums[i], letters[i]);
-		printChar(nums[i], letters[i]);
-		//printf(" %d\n", tempint);
+		for (int n = 0; n < data[i]->k; n++){
+			printf("%i%c",(int)data[i]->nums[n], (char)data->letters[n]);
+			//printChar(nums[i], letters[i]);
+			//printf(" %d\n", tempint);
+		}
 	}
 
 	//turn++;
