@@ -118,6 +118,10 @@ void *readFile(void *threadData){
 			}
 		}
 	}
+
+	for(int i = 0; i < k; i++){
+		printf("thread: %i, nums[%i]: %i, letters[%i]: %c\n", data->threadNum, i, nums[i], i, letters[i]);
+	}
 	
 	data->k = k;
 	data->nums = nums;
@@ -136,7 +140,7 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 	
-	int num_threads = 4;
+	int num_threads = 2;
 	int charCount = 0;
 	char prevChar = 0;
 	char currChar = 0;
@@ -160,7 +164,6 @@ int main(int argc, char *argv[]){
 	//pthread_mutex_init(&lock, NULL);
 
 	ThreadData **threaddata;
-	int buffer = 0;
     threaddata = malloc(sizeof(ThreadData*) * num_threads * (argc - 1));
 
 	if (threaddata == NULL){
@@ -215,9 +218,9 @@ int main(int argc, char *argv[]){
 			struct ThreadData *tempData;
 			pthread_join(threads[uu], &returnData);
 			printf("thread %i returned\n", uu + 1);
-			tempData = returnData; 
-			*(threaddata + uu + buffer) = tempData;
-			buffer++;
+			tempData = returnData;
+			printf("length of nums for thread %i: %i\n", uu + 1, tempData->k); 
+			*(threaddata + uu + j - 1) = tempData;
 		}
 	}
 
@@ -226,13 +229,12 @@ int main(int argc, char *argv[]){
 	//while(turn != data->threadTurn)
 		//pthread_cond_wait(&cv[data->threadTurn], &lock);
 	
-	printf("Now starting to print %i\n", threaddata[0]->k);
+	printf("Now starting to print %c\n", threaddata[0]->letters[0]);
 
 	//Working through making print statement.
 	for (int i = 0; i < (num_threads * (argc - 1)); i++) {
-		printf("new thread data\n");
+		printf("thread %i data:\n", i + 1);
 		for (int n = 0; n < threaddata[i]->k; n++){
-			printf("char '%c'\n", threaddata[i]->letters[n]);
 			printf("%i%c",(int)threaddata[i]->nums[n], (char)threaddata[i]->letters[n]);
 			//printChar(nums[i], letters[i]);
 			//printf(" %d\n", tempint);
