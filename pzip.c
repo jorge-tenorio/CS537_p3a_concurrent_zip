@@ -6,15 +6,27 @@
 #include <string.h>
 #include <unistd.h>
 #include <limits.h>
+#include <pthread.h>
 
-typedef struct FileData{
-	int count;
-	char prev;
-	char curr;
-	int* n;
-	int* l;
-	int nlSize;
-}FileData;
+typedef struct ThreadData{
+	char *f;
+	int size;
+	int charCount;
+	char prevChar;
+	char currChar;
+	int j;
+	int argc;
+	//int threadTurn;
+	char start;
+	char end;
+	char *letters;
+	int *nums;
+	int k;
+}ThreadData;
+
+//pthread_mutex_t lock;
+//pthread_cond_t *cv;
+//volatile int turn;
 
 int numDigits(int n);
 
@@ -23,10 +35,23 @@ void printChar(int num, char letter){
 	fwrite(&letter, sizeof(letter), 1, stdout);
 }
 
-FileData readFile(char *f, int size, int charCount, char prevChar, char currChar, int j, int argc){
+void *readFile(void *threadData){
+
+	struct ThreadData *data = threadData;
+	int j = data->j;
+	char *f = data->f;
+	int size = data->size;
+	int charCount = data->charCount;
+	char prevChar = data->prevChar;
+	char currChar = data->currChar;
+	int argc = data->argc;
+	//int threadTurn = data->threadTurn;
+
 	if(j == 1){
 		prevChar = f[0];
 	}
+
+	data->start = f[0]
 
 	int arrSize = 8;
 	int k = 0; // nums and letters index
@@ -38,6 +63,10 @@ FileData readFile(char *f, int size, int charCount, char prevChar, char currChar
 	}
 
 	for (int i = 0; i < size; i++) {
+		if(i == size - 1){
+			data->end = f[i];
+		}
+
 		currChar = f[i];
 
 		// Skip \0, do not reset char count
@@ -46,7 +75,7 @@ FileData readFile(char *f, int size, int charCount, char prevChar, char currChar
 		//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
 	
 		// Main zip function
-		if (currChar == prevChar && (i <  size - 1 || j < argc - 1)) {
+		if (currChar == prevChar && (i < size - 1 || j < argc - 1)) {
 			charCount++;
 		} else {
 			if(i == size - 1 && currChar == prevChar){
@@ -89,26 +118,16 @@ FileData readFile(char *f, int size, int charCount, char prevChar, char currChar
 			}
 		}
 	}
-
-	//Working through making print statement.
-	for (int i = 0; i < k; i++) {
-		//printf("%i%c",nums[i], letters[i]);
-		printChar(nums[i], letters[i]);
-		//printf(" %d\n", tempint);
-	}
-
-	// Add extra space incase array is completely full
-	// TODO: put print statement in the main method after running through the file. 
-
-	struct FileData data;
-	data.count = charCount;
-	data.prev = prevChar;
-	data.curr = currChar;
-	data.n = nums;
-	data.l = nums;
+	
+	data->k = k;
+	data->nums = nums;
+	data->letters = letters;
+	data->charCount = charCount;
+	data->prevChar = prevChar;
+	data->currChar = currChar;
 	free(nums);
 	free(letters);
-	return data;
+	return (void *)data;
 }
 
 int main(int argc, char *argv[]){
@@ -117,14 +136,39 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 	
-	//int num_threads = 0;
-	//int page_size = getpagesize();
-	//printf("page size: %i\n", page_size);	
-	// read all the files given to us
-
+	int num_threads = 4;
 	int charCount = 0;
 	char prevChar = 0;
 	char currChar = 0;
+	//turn = 1;
+	
+	//pthread *threads = (pthread*)malloc(sizeof(pthread) * num_threads);
+	//cv = (pthread_cond_t*)malloc(sizeof(pthread_cond_t) * num_threads);
+
+	if (cv == NULL || threads == NULL){
+		printf("Cannot malloc\n");
+		exit(1);
+	}
+
+	for(int i = 0; i < num_threads; i++){
+		if (pthread_cond_init(&cv[i], NULL) != 0) {
+			printf("pthread_cond_init() error");
+			exit(1);
+		}
+	}
+
+	//pthread_mutex_init(&lock, NULL);
+
+	void struct FileData *data;
+	int buffer = 0;
+    data = (struct FileData*)malloc(sizeof(struct FileData) * num_threads * (argc - 1));
+
+	if (data == NULL){
+		printf("Cannot malloc\n");
+		exit(1);
+	}
+
+
 	//printf("num files: %i\n", argc - 1);
 	for(int j = 1; j < argc; j++){
 		char *f;
@@ -144,13 +188,71 @@ int main(int argc, char *argv[]){
 		if(j == 1){
 			prevChar = f[0];
 		}
+		
+		
+		
+		void struct FileData *data;
+		data = (struct FileData*)malloc(sizeof(struct FileData) * num_threadsi);
+		if(data == NULL){
+			printf("Cannot malloc\n");
+			exit(1);
+		}
 
-		struct FileData data = readFile(f, size, charCount, prevChar, currChar, j, argc);
+		for (int uu = 0; uu < num_threads; uu++){
+			pthread_t newThread;
+			threads[uu] = newThread;
+			
+			struct ThreadData *newThreadData = malloc(sizeof(struct ThreadData));
 
-		charCount = data.count;
-		prevChar = data.prev;
-		currChar = data.curr;
+			if (newThreadData == NULL){
+				printf("Cannot malloc\n");
+				exit(1);
+			}
+
+			newThreadData->f = f;
+			newThreadData->size = size;
+			newThreadData->charCount = charCount;
+			newThreadData->prevChar = prevChar;
+			newThreadData->currChar = currChar;
+			newThreadData->j = j;
+			newThreadData->argc = argc;
+			//newThreadData->threadTurn = uu + 1;
+			
+			pthread_create(newThread, NULL, readFile, newThreadData);
+
+			free(newThreadData);
+		}
+
+		for(int uu = 0; uu < num_threads; uu++){
+			pthread_join(threads[uu], &data[uu + buffer]);
+			buffer++;
+		}
 	}
+
+	//pthread_mutex_lock(&lock);
+
+	//while(turn != data->threadTurn)
+		//pthread_cond_wait(&cv[data->threadTurn], &lock);
+
+
+	//Working through making print statement.
+	for (int i = 0; i < (num_threads * (argc - 1)); i++) {
+		
+
+
+
+		//printf("%i%c",nums[i], letters[i]);
+		printChar(nums[i], letters[i]);
+		//printf(" %d\n", tempint);
+	}
+
+	//turn++;
+	//pthread_cond_signal(&cv[turn]);
+	//pthread_mutex_unlock(&lock);
+	
+	free(cv);
+	free(threads);
+
 	return 0;
 }
 
