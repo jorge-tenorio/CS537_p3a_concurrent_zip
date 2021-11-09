@@ -16,7 +16,7 @@ typedef struct ThreadData{
 	char currChar;
 	int j;
 	int argc;
-	//int threadTurn;
+	int threadNum;
 	char start;
 	char end;
 	char *letters;
@@ -72,7 +72,7 @@ void *readFile(void *threadData){
 		// Skip \0, do not reset char count
 		if (currChar == 00) continue;
 
-		//printf("charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", charCount, currChar, prevChar, j, i);
+		printf("thread num: %i, charCount %i, currchar: %c prevchar: %c char in file %i: %i\n", data->threadNum, charCount, currChar, prevChar, j, i);
 	
 		// Main zip function
 		if (currChar == prevChar && (i < size - 1 || j < argc - 1)) {
@@ -189,10 +189,7 @@ int main(int argc, char *argv[]){
 			prevChar = f[0];
 		}
 
-		for (int uu = 0; uu < num_threads; uu++){
-			pthread_t newThread;
-			threads[uu] = newThread;
-			
+		for (int uu = 0; uu < num_threads; uu++){			
 			ThreadData *newThreadData = malloc(sizeof(* newThreadData));
 
 			if (newThreadData == NULL){
@@ -207,17 +204,17 @@ int main(int argc, char *argv[]){
 			newThreadData->currChar = currChar;
 			newThreadData->j = j;
 			newThreadData->argc = argc;
+			newThreadData->threadNum = uu + 1;
 			//newThreadData->threadTurn = uu + 1;
-			
-			pthread_create(&newThread, NULL, readFile, newThreadData);
-
-			free(newThreadData);
+			printf("thread %i created\n", uu + 1);
+			pthread_create(&threads[uu], NULL, readFile, newThreadData);
 		}
-
+		
 		for(int uu = 0; uu < num_threads; uu++){
 			void *returnData;
 			struct ThreadData *tempData;
 			pthread_join(threads[uu], &returnData);
+			printf("thread %i returned\n", uu + 1);
 			tempData = returnData; 
 			*(threaddata + uu + buffer) = tempData;
 			buffer++;
@@ -228,12 +225,15 @@ int main(int argc, char *argv[]){
 
 	//while(turn != data->threadTurn)
 		//pthread_cond_wait(&cv[data->threadTurn], &lock);
-
+	
+	printf("Now starting to print %i\n", threaddata[0]->k);
 
 	//Working through making print statement.
 	for (int i = 0; i < (num_threads * (argc - 1)); i++) {
+		printf("new thread data\n");
 		for (int n = 0; n < threaddata[i]->k; n++){
-			printf("%i%c",threaddata[i]->nums[n], threaddata[i]->letters[n]);
+			printf("char '%c'\n", threaddata[i]->letters[n]);
+			printf("%i%c",(int)threaddata[i]->nums[n], (char)threaddata[i]->letters[n]);
 			//printChar(nums[i], letters[i]);
 			//printf(" %d\n", tempint);
 		}
