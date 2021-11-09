@@ -241,7 +241,7 @@ int main(int argc, char *argv[]){
 	//pthread_cond_signal(&cv[turn]);
 	//pthread_mutex_unlock(&lock);
 	
-	free(cv);
+	//free(cv);
 	free(threads);
 
 	return 0;
