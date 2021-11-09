@@ -209,7 +209,7 @@ int main(int argc, char *argv[]){
 			newThreadData->argc = argc;
 			//newThreadData->threadTurn = uu + 1;
 			
-			pthread_create(newThread, NULL, readFile, newThreadData);
+			pthread_create(&newThread, NULL, readFile, newThreadData);
 
 			free(newThreadData);
 		}
