@@ -129,8 +129,6 @@ void *readFile(void *threadData){
 	data->charCount = charCount;
 	data->prevChar = prevChar;
 	data->currChar = currChar;
-	free(nums);
-	free(letters);
 	return data;
 }
 
@@ -171,6 +169,7 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 
+	int lastIndex = 0;
 
 	//printf("num files: %i\n", argc - 1);
 	for(int j = 1; j < argc; j++){
@@ -193,24 +192,24 @@ int main(int argc, char *argv[]){
 		}
 
 		for (int uu = 0; uu < num_threads; uu++){			
-			ThreadData *newThreadData = malloc(sizeof(* newThreadData));
+			ThreadData newThreadData;
 
-			if (newThreadData == NULL){
-				printf("Cannot malloc\n");
-				exit(1);
-			}
+			//if (newThreadData == NULL){
+				//printf("Cannot malloc\n");
+				//exit(1);
+			//}
 
-			newThreadData->f = f;
-			newThreadData->size = size;
-			newThreadData->charCount = charCount;
-			newThreadData->prevChar = prevChar;
-			newThreadData->currChar = currChar;
-			newThreadData->j = j;
-			newThreadData->argc = argc;
-			newThreadData->threadNum = uu + 1;
+			newThreadData.f = f;
+			newThreadData.size = size;
+			newThreadData.charCount = charCount;
+			newThreadData.prevChar = prevChar;
+			newThreadData.currChar = currChar;
+			newThreadData.j = j;
+			newThreadData.argc = argc;
+			newThreadData.threadNum = uu + 1;
 			//newThreadData->threadTurn = uu + 1;
 			printf("thread %i created\n", uu + 1);
-			pthread_create(&threads[uu], NULL, readFile, newThreadData);
+			pthread_create(&threads[uu], NULL, readFile, &newThreadData);
 		}
 		
 		for(int uu = 0; uu < num_threads; uu++){
@@ -220,7 +219,8 @@ int main(int argc, char *argv[]){
 			printf("thread %i returned\n", uu + 1);
 			tempData = returnData;
 			printf("length of nums for thread %i: %i\n", uu + 1, tempData->k); 
-			*(threaddata + uu + j - 1) = tempData;
+			*(threaddata + lastIndex) = tempData;
+			lastIndex++;
 		}
 	}
 
@@ -229,11 +229,11 @@ int main(int argc, char *argv[]){
 	//while(turn != data->threadTurn)
 		//pthread_cond_wait(&cv[data->threadTurn], &lock);
 	
-	printf("Now starting to print %c\n", threaddata[0]->letters[0]);
+	printf("Now starting to print\n");
 
 	//Working through making print statement.
 	for (int i = 0; i < (num_threads * (argc - 1)); i++) {
-		printf("thread %i data:\n", i + 1);
+		printf("thread %i data below:\n", i + 1);
 		for (int n = 0; n < threaddata[i]->k; n++){
 			printf("%i%c",(int)threaddata[i]->nums[n], (char)threaddata[i]->letters[n]);
 			//printChar(nums[i], letters[i]);
@@ -247,6 +247,7 @@ int main(int argc, char *argv[]){
 	
 	//free(cv);
 	free(threads);
+	free(threaddata);
 
 	return 0;
 }
