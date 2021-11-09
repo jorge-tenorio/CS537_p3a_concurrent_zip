@@ -159,11 +159,11 @@ int main(int argc, char *argv[]){
 
 	//pthread_mutex_init(&lock, NULL);
 
-	struct FileData *data;
+	struct ThreadData *threaddata;
 	int buffer = 0;
-    data = (struct FileData*)malloc(sizeof(struct FileData*) * num_threads * (argc - 1));
+    threaddata = (struct ThreadData*)malloc(sizeof(struct ThreadData*) * num_threads * (argc - 1));
 
-	if (data == NULL){
+	if (threaddata == NULL){
 		printf("Cannot malloc\n");
 		exit(1);
 	}
@@ -217,7 +217,7 @@ int main(int argc, char *argv[]){
 		for(int uu = 0; uu < num_threads; uu++){
 			void *returnData;
 			pthread_join(threads[uu], &returnData);
-			data[uu + buffer] = (struct FileData*) returnData;
+			threaddata[uu + buffer] = (struct ThreadData) returnData;
 			buffer++;
 		}
 	}
@@ -230,8 +230,8 @@ int main(int argc, char *argv[]){
 
 	//Working through making print statement.
 	for (int i = 0; i < (num_threads * (argc - 1)); i++) {
-		for (int n = 0; n < data[i]->k; n++){
-			printf("%i%c",(int)data[i]->nums[n], (char)data->letters[n]);
+		for (int n = 0; n < threaddata[i]->k; n++){
+			printf("%i%c",(int)threaddata[i]->nums[n], (char)threaddata->letters[n]);
 			//printChar(nums[i], letters[i]);
 			//printf(" %d\n", tempint);
 		}
