@@ -161,7 +161,7 @@ int main(int argc, char *argv[]){
 
 	void *data;
 	int buffer = 0;
-    data = (struct FileData*)malloc(sizeof(struct FileData) * num_threads * (argc - 1));
+    data = (struct FileData*)malloc(sizeof(struct FileData*) * num_threads * (argc - 1));
 
 	if (data == NULL){
 		printf("Cannot malloc\n");
