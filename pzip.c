@@ -127,7 +127,7 @@ void *readFile(void *threadData){
 	data->currChar = currChar;
 	free(nums);
 	free(letters);
-	return (void *)data;
+	return data;
 }
 
 int main(int argc, char *argv[]){
@@ -159,9 +159,9 @@ int main(int argc, char *argv[]){
 
 	//pthread_mutex_init(&lock, NULL);
 
-	struct ThreadData *threaddata;
+	ThreadData **threaddata;
 	int buffer = 0;
-    threaddata = (struct ThreadData*)malloc(sizeof(struct ThreadData*) * num_threads * (argc - 1));
+    threaddata = malloc(sizeof(ThreadData*) * num_threads * (argc - 1));
 
 	if (threaddata == NULL){
 		printf("Cannot malloc\n");
@@ -193,7 +193,7 @@ int main(int argc, char *argv[]){
 			pthread_t newThread;
 			threads[uu] = newThread;
 			
-			struct ThreadData *newThreadData = malloc(sizeof(struct ThreadData));
+			ThreadData *newThreadData = malloc(sizeof(* newThreadData));
 
 			if (newThreadData == NULL){
 				printf("Cannot malloc\n");
@@ -216,8 +216,10 @@ int main(int argc, char *argv[]){
 
 		for(int uu = 0; uu < num_threads; uu++){
 			void *returnData;
+			struct ThreadData *tempData;
 			pthread_join(threads[uu], &returnData);
-			threaddata[uu + buffer] = (struct ThreadData) returnData;
+			tempData = returnData; 
+			*(threaddata + uu + buffer) = tempData;
 			buffer++;
 		}
 	}
@@ -231,7 +233,7 @@ int main(int argc, char *argv[]){
 	//Working through making print statement.
 	for (int i = 0; i < (num_threads * (argc - 1)); i++) {
 		for (int n = 0; n < threaddata[i]->k; n++){
-			printf("%i%c",(int)threaddata[i]->nums[n], (char)threaddata->letters[n]);
+			printf("%i%c",threaddata[i]->nums[n], threaddata[i]->letters[n]);
 			//printChar(nums[i], letters[i]);
 			//printf(" %d\n", tempint);
 		}
