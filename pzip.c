@@ -119,9 +119,9 @@ void *readFile(void *threadData){
 		}
 	}
 
-	for(int i = 0; i < k; i++){
-		printf("thread: %i, nums[%i]: %i, letters[%i]: %c\n", data->threadNum, i, nums[i], i, letters[i]);
-	}
+	//for(int i = 0; i < k; i++){
+		//printf("thread: %i, nums[%i]: %i, letters[%i]: %c\n", data->threadNum, i, nums[i], i, letters[i]);
+	//}
 	
 	data->k = k;
 	data->nums = nums;
@@ -218,7 +218,7 @@ int main(int argc, char *argv[]){
 			pthread_join(threads[uu], &returnData);
 			printf("thread %i returned\n", uu + 1);
 			tempData = returnData;
-			printf("length of nums for thread %i: %i\n", uu + 1, tempData->k); 
+			//printf("length of nums for thread %i: %i\n", uu + 1, tempData->k); 
 			*(threaddata + lastIndex) = tempData;
 			lastIndex++;
 		}
@@ -229,11 +229,11 @@ int main(int argc, char *argv[]){
 	//while(turn != data->threadTurn)
 		//pthread_cond_wait(&cv[data->threadTurn], &lock);
 	
-	printf("Now starting to print\n");
+	//printf("Now starting to print\n");
 
 	//Working through making print statement.
 	for (int i = 0; i < (num_threads * (argc - 1)); i++) {
-		printf("thread %i data below:\n", i + 1);
+		//printf("thread %i data below:\n", i + 1);
 		for (int n = 0; n < threaddata[i]->k; n++){
 			printf("%i%c",(int)threaddata[i]->nums[n], (char)threaddata[i]->letters[n]);
 			//printChar(nums[i], letters[i]);
