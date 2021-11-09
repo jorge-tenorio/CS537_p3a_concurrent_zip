@@ -92,7 +92,7 @@ FileData readFile(char *f, int size, int charCount, char prevChar, char currChar
 	//Working through making print statement.
 	for (int i = 0; i <= k; i++) {
 		//printf("%i%c\n",nums[i], letters[i]);
-		printChar(&nums[i], letters[i]);
+		printChar(nums[i], letters[i]);
 		//printf(" %d\n", tempint);
 	}
 
