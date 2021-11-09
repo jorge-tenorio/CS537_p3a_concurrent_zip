@@ -159,7 +159,7 @@ int main(int argc, char *argv[]){
 
 	//pthread_mutex_init(&lock, NULL);
 
-	void *data;
+	struct FileData *data;
 	int buffer = 0;
     data = (struct FileData*)malloc(sizeof(struct FileData*) * num_threads * (argc - 1));
 
@@ -215,7 +215,9 @@ int main(int argc, char *argv[]){
 		}
 
 		for(int uu = 0; uu < num_threads; uu++){
-			pthread_join(threads[uu], &data[uu + buffer]);
+			void *returnData;
+			pthread_join(threads[uu], &returnData);
+			data[uu + buffer] = (struct FileData*) returnData;
 			buffer++;
 		}
 	}
