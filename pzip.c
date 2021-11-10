@@ -40,15 +40,14 @@ void *readFile(void *threadData){
 	int j = data->j;
 	char *f = data->f;
 	int size = data->size;
-	int charCount = data->charCount;
+	int charCount = 0;
 	char prevChar = data->prevChar;
 	char currChar = data->currChar;
 	int argc = data->argc;
 	//int threadTurn = data->threadTurn;
+	printf("thread: %i, start: %i, end: %i, char: %c\n", data->threadNum, data->startSize, data->size, f[data->startSize]);
 
-	if(j == 1){
-		prevChar = f[0];
-	}
+	prevChar = f[data->startSize];
 
 	int arrSize = 8;
 	int k = 0; // nums and letters index
@@ -63,6 +62,7 @@ void *readFile(void *threadData){
 
 	for (int i = data->startSize; i < size; i++) {
 		currChar = f[i];
+		printf("thread %i, prevchar: %c, i: %i\n", data->threadNum, prevChar, i);
 
 		// Skip \0, do not reset char count
 		if (currChar == 00) continue;
@@ -71,6 +71,9 @@ void *readFile(void *threadData){
 	
 		// Main zip function
 		if (currChar == prevChar && (i < size - 1 || j < argc - 1)) {
+			if(currChar == 'e'){
+				//printf("thread % i char count: %i\n", data->threadNum, charCount);
+			}
 			charCount++;
 		} else {
 			if(i == size - 1 && currChar == prevChar){
@@ -114,9 +117,9 @@ void *readFile(void *threadData){
 		}
 	}
 
-	//for(int i = 0; i < k; i++){
-		//printf("thread: %i, nums[%i]: %i, letters[%i]: %c\n", data->threadNum, i, nums[i], i, letters[i]);
-	//}
+	for(int i = 0; i < k; i++){
+		printf("thread: %i, nums[%i]: %i, letters[%i]: %c\n", data->threadNum, i, nums[i], i, letters[i]);
+	}
 	
 	data->k = k;
 	data->nums = nums;
@@ -133,7 +136,7 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 	
-	long int num_threads = sysconf(_SC_NPROCESSORS_ONLN);;
+	long int num_threads = sysconf(_SC_NPROCESSORS_ONLN);
 	int charCount = 0;
 	char prevChar = 0;
 	char currChar = 0;
@@ -241,10 +244,14 @@ int main(int argc, char *argv[]){
 	char threadPrevChar = threaddata[0]->letters[0];
 	char threadCurrChar = threaddata[0]->letters[0];
 	int totalCharCount = 0;
+	int prevIndex = 0;
+
+	printf("NO WAY: '%c' %i\n", threaddata[1]->letters[143], threaddata[0]->nums[144]);
 	for (int i = 0; i < (num_threads * (argc - 1)); i++) {
 		printf("thread %i data below:\n", i + 1);
-		for (int n = 0; n < threaddata[i]->k; n++){
-			printf("prevChar: '%c', currChar: '%c', totalCharCount: %i\n", threadPrevChar, threadCurrChar, totalCharCount);
+		for (int n = 0; n <= threaddata[i]->k; n++){
+			printf("----------------%c\n", threaddata[i]->letters[n]);
+			printf("prevChar: '%c', currChar: '%c', totalCharCount: %i, i: %i, n: %i\n", threadPrevChar, threadCurrChar, totalCharCount, i , n);
 			//printf("%d, %d\n", i != (num_threads * (argc - 1)) - 1, n != threaddata[i]->k - 1);
 			if(threadPrevChar == threadCurrChar){
 				printf("1totalcount incremented by %i\n", threaddata[i]->nums[n]);
@@ -255,19 +262,33 @@ int main(int argc, char *argv[]){
 					totalCharCount = totalCharCount + threaddata[i]->nums[n];
 				}
 
-				if(threadPrevChar == 10){
-					totalCharCount = threaddata[i]->nums[n];
+				if(threadPrevChar == '\n'){
+					if( n != 0){
+						totalCharCount = threaddata[i]->nums[prevIndex];
+					}
 					printf("%i\\n\n", totalCharCount);
 				}else{
 					printf("%i%c", totalCharCount, threadPrevChar);
 				}
-				totalCharCount = 0;
+				totalCharCount = threaddata[i]->nums[n];
 				//printChar(nums[i], letters[i]);
-				//printf(" %d\n", tempint);
 			}
+			//threadPrevChar = threadCurrChar;
+			//printf("i dont know now here i dont know %c\n", threadPrevChar);
 			threadPrevChar = threadCurrChar;
-			threadCurrChar = threaddata[i]->letters[n + 1];
+			//printf("got here %c\n", threadPrevChar);
+			if (n < threaddata[i]->k - 1){
+				printf("old set\n");
+				threadCurrChar = threaddata[i]->letters[n + 1];
+			}else{
+				//printf("new set of chars\n");
+				if(i < (num_threads * (argc - 1) - 1)){
+					threadCurrChar = threaddata[i + 1]->letters[0];
+				}
+			}
+			prevIndex = n;
 		}
+		prevIndex = 0;
 	}
 
 	//turn++;
